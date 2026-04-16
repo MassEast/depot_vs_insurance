@@ -24,12 +24,14 @@ The goal is not to price the product perfectly. The goal is to answer a practica
   - 960 EUR/year in the first 5 years at 400 EUR/month
   - 0.48% annual asset fee
 - Insurance payout phase:
-  - shared low-risk payout return: 2.0% p.a. for both depot (e.g., through Festgeld) and insurance (e.g., through safety bonds)
+  - insurance payout return: 3.5% p.a. Deckungsstock-style assumption
+  - depot payout return: 2.75% p.a. Festgeld-like assumption
   - 1.5% annual fee
   - insurance payout tax modeled in two modes:
     - `flat_rate` (legacy fallback for sensitivity checks, e.g. 10%)
     - `annuity_18pct_x_25pct` (effective 4.5% = 18% taxable share x 25% tax)
   - current default in notebook: `annuity_18pct_x_25pct` (effective 4.5%)
+- If the insurance is configured for payout until death, it can also be read as a lifetime annuity once payout starts; that means the total payout can be higher or lower than a fixed-horizon drawdown depending on lifespan.
 - Nominal and inflation-adjusted comparison
 - Monte Carlo runs plus rebalancing sensitivity plots
 
@@ -45,17 +47,17 @@ The goal is not to price the product perfectly. The goal is to answer a practica
 These are the current base-case **Monte Carlo averages** for result type B (2,000 runs):
 
 - Insurance available money at end of payout:
-  - nominal average: 894,633.68 EUR
-  - real average: 729,176.54 EUR
+  - nominal average: 1,048,916.88 EUR
+  - real average: 846,756.40 EUR
 - Depot available money at end of payout:
-  - nominal average: 1,067,622.67 EUR
-  - real average: 861,565.60 EUR
+  - nominal average: 1,159,573.64 EUR
+  - real average: 931,286.29 EUR
 - Total Vorabpauschale tax paid in the single reference run: 44,877.84 EUR
 - Total rebalancing tax paid in the single reference run: 117,559.68 EUR
-- Monte Carlo depot win rate in the current setup: 100.0%
+- Monte Carlo depot win rate in the current setup: 99.9%
 - Monte Carlo nominal difference (depot - insurance):
-  - mean: 172,989 EUR
-  - P05/P95: 82,973 / 293,924 EUR
+  - mean: 110,657 EUR
+  - P05/P95: 65,102 / 158,889 EUR
 
 In Monte Carlo and rebalancing sensitivity, "depot - insurance" means **result type B** (final overall money outcome after the full payout horizon), not just the amount at payout start. The main chart now shows an average path, not one random single path.
 
@@ -81,7 +83,9 @@ Key limitations:
 
 - The Vorabpauschale is still an approximation, not a fully year-specific legal tax engine.
 - The Sparer-Pauschbetrag is treated in a simplified way.
-- The payout phase now assumes a shared low-risk return of 2.0% p.a. for both products. This is still a simplifying assumption, not a contract guarantee.
+- The payout phase now assumes 3.5% p.a. for the insurance and 2.75% p.a. for the depot. This is still a simplifying assumption, not a contract guarantee.
+- The comparison is still run on a fixed 20-year payout horizon. That is useful for comparing account values, but it does not model the insurance as a true lifetime annuity with mortality risk or an open-ended payout period.
+- Once the insurance is set to pay out until death, the comparison gets more contract-specific: the insurance can pay more if you live longer than the depot horizon, or less if you die earlier.
 - Insurance taxation in payout is simplified.
 - The model uses one long-run return assumption and normal return volatility. Real markets are not normal.
 - There is no mortality/longevity table, no health risk, and no guaranteed annuity pricing.
@@ -112,24 +116,7 @@ If the question is:
 
 - **"What is more suitable as a retirement income wrapper with longevity protection and product guarantees?"**
 
-then the insurance can still make sense even if the raw end-value is lower.
-
-## Questions for R.
-
-Use these as a short checklist in the next meeting:
-
-- Is insurance rebalancing currently ON or OFF in my contract?
-  - If ON: how often does it happen, and is it automatic or manual?
-  - Does insurance rebalancing create any direct or indirect costs?
-  - Does insurance rebalancing trigger any tax effect for me?
-  - Why was insurance rebalancing turned off before, and when should it be turned on again?
-- Are the cost assumptions for 400 EUR/month correct (960 EUR/year first 5 years, then 240 EUR/year fixed)?
-- Is the annuity-style payout tax approximation (effective 4.5% from 18% x 25%) correct for my exact contract and payout type? More importantly: Is this fixed/to be relied on?
-  - Where did the earlier 10% payout-tax assumption come from exactly (contract clause, product sheet, or rough estimate only), and should we drop it completely?
-- Is a shared low-risk payout return of 2.0% p.a. realistic for both products in practice, and under what constraints?
-- **Should part of the insurance allocation be in safer assets (not 100% ETFs), and if yes, what target split is realistic?**
-  - How often can I switch between risky and safer allocations in the insurance without penalties, and are there hidden constraints (timing windows, minimum quotas, switch limits)?
-  - If I want a Festgeld-like phase from age X onward, what is the closest equivalent inside the insurance contract and how has it performed net in recent years?
+then the insurance can still make sense even if the raw end-value is lower, because once payout starts it can behave like a lifetime annuity rather than a fixed drawdown schedule.
 
 ## Bottom line
 
